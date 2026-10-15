@@ -21,6 +21,7 @@ JProducts/
 
 - 写真は sRGB に変換し、幅 1200px と 2400px の JPEG にする（`sips -m "/System/Library/ColorSync/Profiles/sRGB Profile.icc" -Z 1200 -s format jpeg -s formatOptions 80`）
 - 公開前にメタデータを消す（`exiftool -overwrite_original -all= <ファイル>`）
+- `<製品名>/images/banner.jpg`: ブログなど外から貼るための横長バナー（2400×600、表示は 1200×300）。製品写真の上に半透明の面を重ね、製品名・キャッチコピー・スペックを置いた HTML を headless Chrome で 2 倍解像度で書き出した
 
 ## ロゴ（`assets/`）
 
