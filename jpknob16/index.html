@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JP-Knob16 — 写真から目を離さない、16ノブのコントローラー</title>
+<meta name="description" content="写真を見たまま、思ったパラメータにすぐ手が届く。OLED 4 枚・ノブ 16 個・キー 10 個の USB MIDI コントローラー JP-Knob16。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="JP-Knob16 — 写真から目を離さない、16ノブのコントローラー">
+<meta property="og:description" content="OLED 4 枚・ノブ 16 個・キー 10 個の USB MIDI コントローラー。">
+<meta property="og:url" content="https://junpeiwada.github.io/JProducts/jpknob16/">
+<meta property="og:image" content="https://junpeiwada.github.io/JProducts/jpknob16/images/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@junpeiwada">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2316181d'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23c2d94a'/%3E%3Crect x='15' y='8' width='2' height='7' rx='1' fill='%2316181d'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=Fira+Sans+Condensed:wght@500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f6f6f3;
+  --surface: #ffffff;
+  --ink: #16181d;
+  --ink-2: #565b64;
+  --ink-3: #8a8f98;
+  --line: #e4e4de;
+  --lime: #c2d94a;
+  --lime-ink: #5b7000;
+  --lime-soft: #f1f6d6;
+  --radius: 20px;
+  --font-display: "Space Grotesk", "Noto Sans JP", sans-serif;
+  --font-body: "Noto Sans JP", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+img { max-width: 100%; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* ヘッダー */
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(246, 246, 243, .82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+}
+header.scrolled { border-bottom-color: var(--line); }
+.nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 20px; text-decoration: none; letter-spacing: -.01em; }
+.logo-mark { width: 26px; height: 26px; }
+.nav ul { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; font-size: 14px; }
+.nav ul a { text-decoration: none; color: var(--ink-2); }
+.nav ul a:hover { color: var(--ink); }
+
+/* ヒーロー */
+.hero { padding: 64px 0 0; text-align: center; }
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em;
+  color: var(--ink-2); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px;
+}
+.badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 3px var(--lime-soft); }
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 6vw, 68px);
+  line-height: 1.18; letter-spacing: -.02em;
+  margin: 24px 0 18px;
+}
+h1 .mark { background: linear-gradient(transparent 62%, var(--lime) 62%, var(--lime) 92%, transparent 92%); padding: 0 .06em; }
+.lead { font-size: clamp(15px, 1.8vw, 18px); color: var(--ink-2); max-width: 660px; margin: 0 auto; }
+.cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 24px; border-radius: 999px;
+  font-weight: 500; font-size: 15px; text-decoration: none;
+  transition: transform .15s, box-shadow .15s, background .15s;
+}
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(22, 24, 29, .18); }
+.btn-ghost { background: var(--surface); border: 1px solid var(--line); }
+.btn-ghost:hover { border-color: var(--ink-3); }
+.btn svg { width: 16px; height: 16px; }
+.hero-photo {
+  margin: 48px 0 0; border-radius: 28px; overflow: hidden;
+  box-shadow: 0 30px 60px -30px rgba(60, 40, 20, .45);
+}
+.hero-photo img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+
+/* 数字の帯 */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin: 56px 0 0; }
+.stat { background: var(--surface); padding: 28px 16px; text-align: center; }
+.stat b { display: block; font-family: var(--font-display); font-size: 44px; line-height: 1; letter-spacing: -.02em; }
+.stat span { display: block; margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+
+/* セクション共通 */
+section { padding: 104px 0 0; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; color: var(--lime-ink); text-transform: uppercase; }
+.nb { display: inline-block; }
+h1, h2, h3 { word-break: auto-phrase; }
+h2 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 40px); line-height: 1.3; letter-spacing: -.01em; margin: 10px 0 16px; }
+.section-lead { color: var(--ink-2); max-width: 660px; margin: 0; }
+
+/* マウスとの比較 */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+.compare-col { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
+.compare-col.good { border-color: var(--lime); box-shadow: 0 0 0 1px var(--lime); }
+.compare-head { font-weight: 700; font-size: 17px; margin-bottom: 12px; }
+.compare-col:not(.good) .compare-head { color: var(--ink-3); }
+.compare ol { margin: 0; padding-left: 1.4em; color: var(--ink-2); font-size: 15px; }
+.compare ol li { padding: 3px 0; }
+.compare-col:not(.good) ol li:nth-child(2), .compare-col:not(.good) ol li:nth-child(4) { color: #b0523a; }
+.compare-col p { margin: 14px 0 0; padding-top: 14px; border-top: 1px dashed var(--line); font-size: 14.5px; color: var(--ink-2); }
+
+/* さわれる正面図 */
+.demo { margin-top: 40px; background: var(--surface); border: 1px solid var(--line); border-radius: 28px; padding: 36px 32px 28px; }
+
+/* 写真編集の画面（デモ） */
+.screen { max-width: 560px; margin: 0 auto 32px; border-radius: 12px; overflow: hidden; background: #1d1e21; box-shadow: 0 18px 40px -18px rgba(20, 20, 30, .45); }
+.screen-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: #2a2b2f; }
+.screen-bar i { width: 9px; height: 9px; border-radius: 50%; background: #4a4b50; }
+.screen-bar span { margin-left: 8px; font-family: var(--font-mono); font-size: 11px; color: #9a9ca3; }
+.screen-view { position: relative; aspect-ratio: 3 / 2; overflow: hidden; }
+.screen-view > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+#scene { transition: filter .12s; }
+.ov { pointer-events: none; }
+#ovTemp, #ovTint { mix-blend-mode: soft-light; transition: opacity .12s, background .12s; }
+#ovGrain { opacity: 0; mix-blend-mode: overlay; }
+#ovVig { transition: opacity .12s; }
+.screen-view.swap #scene { animation: swap .32s ease-out; }
+@keyframes swap { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+.before-tag { left: 10px !important; top: 10px !important; inset: auto; width: auto !important; height: auto !important; padding: 2px 10px; border-radius: 999px; background: rgba(0, 0, 0, .55); color: #fff; font-size: 12px; opacity: 0; transition: opacity .1s; }
+.screen-view.before .before-tag { opacity: 1; }
+.toast { inset: auto !important; left: 50% !important; bottom: 14px !important; width: auto !important; height: auto !important; transform: translate(-50%, 8px); padding: 7px 16px; border-radius: 999px; background: rgba(20, 22, 26, .82); color: #fff; font-size: 13px; white-space: nowrap; opacity: 0; transition: opacity .18s, transform .18s; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.screen-foot { display: flex; justify-content: space-between; padding: 7px 12px; font-family: var(--font-mono); font-size: 11px; color: #9a9ca3; background: #232427; }
+#stars { color: var(--lime); letter-spacing: 2px; }
+#stars .off { color: #4a4b50; }
+
+#device { width: 100%; height: auto; display: block; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+#device .knob { cursor: grab; }
+#device .knob:active { cursor: grabbing; }
+#device .knob:focus, #device .key:focus { outline: none; }
+#device .knob:focus-visible .knob-skirt { stroke: var(--lime-ink); stroke-width: .8; }
+#device .key:focus-visible .key-face { stroke: var(--lime-ink); stroke-width: .8; }
+#device .key { cursor: pointer; }
+#device .key-cap { transition: transform .06s; }
+#device .key.down .key-cap { transform: translateY(.9px); }
+#device .key-face { transition: filter .06s; }
+#device .key.down .key-face { filter: brightness(.94); }
+#device .oled-val { font-family: "Fira Sans Condensed", sans-serif; font-weight: 500; transition: fill .3s; }
+#device .oled-label { font-family: "Noto Sans JP", sans-serif; font-weight: 500; }
+#device .oled-val.hot { fill: #ffffff; transition: none; }
+.readout {
+  display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px 12px;
+  margin-top: 24px; font-family: var(--font-mono); font-size: 13px; color: var(--ink-3);
+}
+.readout output {
+  min-width: 280px; padding: 6px 14px; border-radius: 8px;
+  background: var(--ink); color: var(--lime); text-align: left;
+}
+.keymap { margin: 14px auto 0; max-width: 640px; text-align: center; font-size: 13px; color: var(--ink-3); }
+.keymap b { color: var(--ink-2); font-weight: 500; }
+/* 特長 */
+.features { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-top: 40px; }
+.features .card { grid-column: span 2; }
+.features .card.media { grid-column: span 3; }
+.features .card.wide { grid-column: span 6; display: flex; gap: 20px; align-items: center; }
+.features .card.wide .icon { margin: 0; flex: none; }
+.card-media { position: relative; margin: -8px -8px 20px; border-radius: 12px; overflow: hidden; background: #000; aspect-ratio: 1542 / 390; }
+.card-media img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.card-media.grade { aspect-ratio: 1352 / 390; }
+.card-media.grade img { object-fit: cover; object-position: right center; }
+.card-media.games img { opacity: 0; transition: opacity .5s; }
+.card-media.games img.on { opacity: 1; }
+.game-name { display: block; margin: -12px 0 10px; text-align: right; font-family: var(--font-mono); font-size: 11px; color: var(--lime-ink); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
+.card .icon { width: 44px; height: 44px; border-radius: 12px; background: var(--lime-soft); color: var(--lime-ink); display: grid; place-items: center; margin-bottom: 18px; }
+.card .icon svg { width: 22px; height: 22px; }
+.card h3 { font-size: 17px; margin: 0 0 8px; line-height: 1.5; }
+.card p { margin: 0; color: var(--ink-2); font-size: 14.5px; }
+
+/* 仕組み */
+.flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; gap: 12px; margin-top: 40px; }
+.flow .box { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+.flow .box b { display: block; font-size: 16px; margin-bottom: 4px; }
+.flow .box p { margin: 0; font-size: 14px; color: var(--ink-2); }
+.flow .arrow { display: grid; place-items: center; color: var(--ink-3); font-family: var(--font-mono); font-size: 12px; text-align: center; line-height: 1.4; }
+.flow .arrow span { display: block; font-size: 22px; color: var(--lime-ink); }
+
+/* 写真・3D 図 */
+figure { margin: 0; }
+.shot { border-radius: var(--radius); overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
+.shot img { display: block; width: 100%; height: auto; }
+.shot figcaption { padding: 12px 20px; font-size: 13px; color: var(--ink-3); border-top: 1px solid var(--line); background: var(--surface); }
+.photo-wide { margin-top: 40px; }
+.inside { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-top: 40px; }
+.inside .shot { grid-column: span 2; }
+.inside .shot.wide { grid-column: span 4; grid-row: span 2; display: flex; flex-direction: column; }
+.inside .shot.wide img { flex: 1; min-height: 0; height: 100%; object-fit: cover; }
+.inside .shot.half { grid-column: span 3; }
+.render-bg { background: linear-gradient(180deg, #eef1f6, #dfe4ec); }
+
+/* 仕様 */
+.spec { margin-top: 40px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.spec dl { margin: 0; display: grid; grid-template-columns: 200px 1fr; }
+.spec dt, .spec dd { margin: 0; padding: 18px 28px; border-top: 1px solid var(--line); }
+.spec dt:first-of-type, .spec dt:first-of-type + dd { border-top: 0; }
+.spec dt { font-size: 14px; color: var(--ink-2); }
+.spec dd { font-size: 15px; }
+.spec small { color: var(--ink-3); }
+
+/* 開発状況 */
+.timeline { list-style: none; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.timeline li { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px 22px 24px; }
+.timeline .step { font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+.timeline h3 { font-size: 16px; margin: 6px 0 4px; }
+.timeline p { margin: 0; font-size: 13px; color: var(--ink-2); }
+.timeline .state { display: inline-block; margin-top: 12px; font-size: 12px; font-weight: 500; padding: 2px 10px; border-radius: 999px; background: var(--bg); color: var(--ink-3); }
+.timeline .done .state { background: #e6f4ea; color: #24804c; }
+.timeline .now { border-color: var(--lime); box-shadow: 0 0 0 1px var(--lime); }
+.timeline .now .state { background: var(--lime-soft); color: var(--lime-ink); }
+
+/* お問い合わせ */
+.contact {
+  margin-top: 104px; padding: 64px 32px; border-radius: 28px; text-align: center;
+  background: var(--ink); color: #fff; position: relative; overflow: hidden;
+}
+.contact::after {
+  content: ""; position: absolute; width: 420px; height: 420px; right: -120px; top: -160px;
+  border-radius: 50%; border: 40px solid rgba(194, 217, 74, .2);
+}
+.contact .eyebrow { color: var(--lime); }
+.contact h2 { color: #fff; margin-top: 8px; }
+.contact p { color: #b9bec8; max-width: 520px; margin: 0 auto; }
+.contact .btn { margin-top: 28px; background: var(--lime); color: var(--ink); position: relative; z-index: 1; }
+.contact .btn:hover { transform: translateY(-1px); }
+
+footer.wrap { padding-top: 48px; padding-bottom: 56px; font-size: 13px; color: var(--ink-3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+/* タブレット */
+@media (max-width: 960px) {
+  .features { grid-template-columns: repeat(2, 1fr); }
+  .features .card, .features .card.media { grid-column: span 1; }
+  .features .card.wide { grid-column: span 2; }
+  .inside { grid-template-columns: repeat(2, 1fr); }
+  .inside .shot, .inside .shot.half { grid-column: span 1; }
+  .inside .shot.wide { grid-column: span 2; grid-row: auto; }
+  .flow { grid-template-columns: 1fr; }
+  .flow .arrow { padding: 2px 0; }
+  .flow .arrow span { transform: rotate(90deg); }
+}
+/* スマホ */
+@media (max-width: 760px) {
+  .wrap { padding: 0 16px; }
+  .nav ul { display: none; }
+  .hero { padding-top: 44px; }
+  .hero-photo { border-radius: 18px; margin-top: 36px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .features { grid-template-columns: 1fr; }
+  .features .card, .features .card.media, .features .card.wide { grid-column: span 1; }
+  .features .card.wide { display: block; }
+  .features .card.wide .icon { margin-bottom: 18px; }
+  .compare { grid-template-columns: 1fr; }
+  .card, .compare-col { padding: 24px; }
+  .demo { padding: 20px 12px 20px; border-radius: 20px; }
+  .inside { grid-template-columns: 1fr; }
+  .inside .shot, .inside .shot.half, .inside .shot.wide { grid-column: span 1; }
+  .spec dl { grid-template-columns: 1fr; }
+  .spec dt { padding-bottom: 0; }
+  .spec dd { border-top: 0; padding-top: 4px; }
+  .timeline { grid-template-columns: 1fr 1fr; }
+  section { padding-top: 80px; }
+  .contact { padding: 48px 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+
+<header id="top">
+  <div class="wrap nav">
+    <a class="logo" href="#top">
+      <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#16181d"/><circle cx="16" cy="16" r="8" fill="#c2d94a"/><rect x="15" y="8" width="2" height="7" rx="1" fill="#16181d"/></svg>
+      JP-Knob16
+    </a>
+    <ul>
+      <li><a href="#why">なぜ</a></li>
+      <li><a href="#try">さわる</a></li>
+      <li><a href="#features">特長</a></li>
+      <li><a href="#inside">中身</a></li>
+      <li><a href="#spec">仕様</a></li>
+      <li><a href="#contact">お問い合わせ</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <span class="badge"><span class="dot"></span>USB MIDI CONTROLLER · 開発中</span>
+    <h1>写真から、<br><span class="mark">目を離さない</span>。</h1>
+    <p class="lead">露光量、シャドウ、色温度。マウスでスライダーを探すたびに、写真から目が離れます。JP-Knob16 なら、16 のパラメータがいつも同じ場所にある。写真を見たまま、思ったものにすぐ手が届きます。</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#contact">お問い合わせ</a>
+      <a class="btn btn-ghost" href="#try">さわってみる</a>
+    </div>
+    <figure class="hero-photo">
+      <img src="images/photo-top-1200.jpg"
+           srcset="images/photo-top-1200.jpg 1200w, images/photo-top-2400.jpg 2400w"
+           sizes="(max-width: 1120px) 100vw, 1072px"
+           width="1200" height="675"
+           alt="木の机に置いた JP-Knob16。白いケースの左に黄緑と白のキーが 10 個、右に OLED 4 枚とノブ 16 個が並ぶ">
+    </figure>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>16</b><span>押せるノブ</span></div>
+    <div class="stat"><b>4</b><span>3.12 インチ OLED</span></div>
+    <div class="stat"><b>10</b><span>メカニカルキー</span></div>
+    <div class="stat"><b>1</b><span>USB-C ケーブル</span></div>
+  </div>
+
+  <section id="why">
+    <div class="eyebrow">Why</div>
+    <h2>見るのは、<span class="nb">写真だけでいい。</span></h2>
+    <p class="section-lead">写真編集は、写真の変化を見ながら少しずつ追い込む作業です。なのにマウスでは、パラメータを変えるたびにスライダーへ目を移さなければなりません。</p>
+    <div class="compare">
+      <div class="compare-col">
+        <div class="compare-head">マウスだと</div>
+        <ol>
+          <li>写真を見て、シャドウを上げたいと思う</li>
+          <li>パネルからシャドウのスライダーを探す</li>
+          <li>つまんで動かしながら、写真に目を戻す</li>
+          <li>次は色温度。またスライダーを探す…</li>
+        </ol>
+      </div>
+      <div class="compare-col good">
+        <div class="compare-head">JP-Knob16 だと</div>
+        <ol>
+          <li>写真を見て、シャドウを上げたいと思う</li>
+          <li>シャドウのノブに手を伸ばして回す</li>
+          <li>次は色温度。写真を見たまま、隣のノブへ</li>
+          <li>決まったら、キーで次の写真へ</li>
+        </ol>
+        <p>どのノブが何かは、手がすぐ覚えます。確かめたいときだけ、ノブの真上の OLED を見れば十分です。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="try">
+    <div class="eyebrow">Try it</div>
+    <h2>さわってみてください。</h2>
+    <p class="section-lead">ノブはスクロールかドラッグで回せます。回すと真上の OLED の値が変わり、上の写真に効きます。左のキーには「次の写真」「取り消し」などを割り当ててあります。ノブそのものには印も目盛りもありません。いまの値は OLED が教えてくれるので、ノブの向きを気にせず、どこからでも回せます。</p>
+    <div class="demo">
+      <div class="screen" aria-label="写真編集の画面のイメージ">
+        <div class="screen-bar"><i></i><i></i><i></i><span id="fileName">DSC_0101.jpg</span></div>
+        <div class="screen-view" id="view">
+          <svg id="scene" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop id="sky0" offset="0"/><stop id="sky1" offset="1"/></linearGradient>
+              <linearGradient id="lake" x1="0" y1="0" x2="0" y2="1"><stop id="lake0" offset="0"/><stop id="lake1" offset="1"/></linearGradient>
+              <radialGradient id="glow"><stop id="glow0" offset="0" stop-opacity=".9"/><stop id="glow1" offset="1" stop-opacity="0"/></radialGradient>
+            </defs>
+            <rect width="300" height="200" fill="url(#sky)"/>
+            <circle id="glowC" r="60" fill="url(#glow)"/>
+            <circle id="sun" r="13"/>
+            <path id="m1" d="M0 120 L40 82 L70 100 L110 60 L150 98 L190 70 L230 96 L262 74 L300 104 L300 140 L0 140Z"/>
+            <path id="m2" d="M0 132 L30 112 L64 126 L104 96 L140 124 L178 106 L214 128 L250 108 L300 130 L300 140 L0 140Z"/>
+            <rect y="138" width="300" height="62" fill="url(#lake)"/>
+            <path id="ref" d="M0 140 L30 160 L64 148 L104 176 L140 150 L178 166 L214 146 L250 164 L300 144 L300 140 L0 140Z" opacity=".35"/>
+            <path id="fg" d="M0 200 L0 170 C40 160 80 178 130 186 C170 192 230 176 300 168 L300 200Z"/>
+          </svg>
+          <div class="ov" id="ovTemp"></div>
+          <div class="ov" id="ovTint"></div>
+          <svg class="ov" id="ovGrain" aria-hidden="true"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#noise)"/></svg>
+          <div class="ov" id="ovVig"></div>
+          <div class="ov before-tag">ビフォー</div>
+          <div class="ov toast" id="toast" role="status" aria-live="polite"></div>
+        </div>
+        <div class="screen-foot"><span id="photoNo">1 / 3</span><span id="stars"></span></div>
+      </div>
+      <svg id="device" viewBox="-8 -10 307 145" role="img" aria-label="JP-Knob16 の正面図。左に 2 列 5 段のキー、右に OLED 4 枚と、その下にノブが 4 個ずつ"></svg>
+      <div class="readout">
+        <span>スクロール・ドラッグ・矢印キーで回せます</span>
+        <output id="readout">MIDI ▸ ready</output>
+      </div>
+      <p class="keymap">キーの割り当て（デモ。左上から）: <b>前の写真・次の写真</b> ／ <b>取り消し・やり直し</b> ／ <b>ビフォー（押している間）・★ レート</b> ／ <b>このノブをリセット・全部リセット</b> ／ <b>設定のコピー・貼り付け</b></p>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="eyebrow">Features</div>
+    <h2>手が覚えて、目は写真に。</h2>
+    <p class="section-lead">画面の中のスライダーを、いつも同じ場所にある手元のノブとキーに置きかえるための道具です。</p>
+
+    <div class="features">
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="6" width="18" height="9" rx="1.5"/><path d="M7 19h10" stroke-linecap="round"/></svg></div>
+        <h3>ノブの真上に、名前と値</h3>
+        <p>3.12 インチ・256×64 の OLED を 4 枚。1 枚がノブ 4 本ぶんの名前と値を出します。日本語のラベルも、16 段階の濃淡でなめらかに表示します。</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h3>印のない 16 本のノブ</h3>
+        <p>ノブに向きの印はありません。端もなく、どこから回しても今の値から増減するだけ。だから向きを見る必要がありません。1 回転 24 クリックの手応えで、押し込むとスイッチにもなります。</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div>
+        <h3>押し心地のいい、10 個のキー</h3>
+        <p>スイッチは MX の茶軸。押した瞬間に軽い段差の手応えがあり、音は静かです。「次の写真」「取り消し」など、よく使う操作を好きに割り当てられます。ホットスワップなので、スイッチの差し替えもできます。</p>
+      </div>
+      <div class="card media">
+        <div class="card-media grade"><img src="images/oled-grade.png" width="1542" height="390" loading="lazy" alt="OLED 4 枚に、色相を示す円いホイール 4 つと、彩度・輝度のバーが並んでいる"></div>
+        <h3>色はホイールで見せる</h3>
+        <p>文字だけではありません。カラーグレーディングでは、色相のホイールや彩度・輝度のバーを OLED に描いて、いまの色を形で見せます。</p>
+      </div>
+      <div class="card media">
+        <div class="card-media games" id="games">
+          <img class="on" src="images/oled-game-life.png" width="1542" height="390" loading="lazy" alt="ライフゲームの画面" data-name="LIFE">
+          <img src="images/oled-game-safe.png" width="1542" height="390" loading="lazy" alt="金庫破りの画面。数字の並んだマスがある" data-name="SAFE（金庫破り）">
+          <img src="images/oled-game-kinoko.png" width="1542" height="390" loading="lazy" alt="KINOKO の画面。雲から雨粒が落ち、キノコが並ぶ" data-name="KINOKO">
+          <img src="images/oled-game-sand.png" width="1542" height="390" loading="lazy" alt="SAND の画面。砂と水が流れ落ちて山になる" data-name="SAND">
+          <img src="images/oled-game-pong.png" width="1542" height="390" loading="lazy" alt="PONG の画面。左右のパドルとボール" data-name="PONG">
+        </div>
+        <span class="game-name" id="gameName">LIFE</span>
+        <h3>待っている間は、ゲーム機</h3>
+        <p>アプリにつないでいない間は、キーで 8 本のミニゲームが遊べます。PONG、金庫破り、反射神経、ライフゲーム、砂遊びなど。OLED 4 枚をつないだ横長の画面で動きます。</p>
+      </div>
+      <div class="card wide">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="7" y="3" width="10" height="7" rx="2"/><path d="M10 6h4M12 10v4M8 21v-3a4 4 0 0 1 8 0v3"/></svg></div>
+        <div>
+          <h3>USB-C 1 本だけ</h3>
+          <p>電源も通信も USB-C ケーブル 1 本です。USB MIDI の標準規格に沿っているので、ドライバーは要りません。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="eyebrow">How it works</div>
+    <h2>アプリと話して動きます。</h2>
+    <p class="section-lead">JP-Knob16 は値を自分で持ちません。対応アプリが名前と値を送り、本体はそれを表示して、ノブとキーの操作を返します。だから画面と手元の数字がいつも同じです。</p>
+    <div class="flow">
+      <div class="box"><b>対応アプリ</b><p>パラメータの名前と今の値を、本体に送ります。</p></div>
+      <div class="arrow"><div><span>⇄</span>USB MIDI</div></div>
+      <div class="box"><b>JP-Knob16</b><p>OLED に表示し、回した量と押したキーをアプリに返します。</p></div>
+      <div class="arrow"><div><span>⇄</span>手</div></div>
+      <div class="box"><b>あなた</b><p>写真を見たまま回す。よく使う操作はキーで。</p></div>
+    </div>
+  </section>
+
+  <section id="photo">
+    <div class="eyebrow">Prototype</div>
+    <h2>試作機ができています。</h2>
+    <p class="section-lead">写真は試作 1 号機です。白いケースは 3D プリントです。</p>
+    <figure class="shot photo-wide">
+      <img src="images/photo-angle-1200.jpg"
+           srcset="images/photo-angle-1200.jpg 1200w, images/photo-angle-2400.jpg 2400w"
+           sizes="(max-width: 1120px) 100vw, 1072px"
+           width="1200" height="675" loading="lazy"
+           alt="斜めから見た JP-Knob16。OLED に露光量 +0.85、コントラスト +7 などの値が出ている">
+      <figcaption>OLED には、写真編集のパラメータ名と値がそのまま出ます。</figcaption>
+    </figure>
+  </section>
+
+  <section id="inside">
+    <div class="eyebrow">Inside</div>
+    <h2>中身と、次の形。</h2>
+    <p class="section-lead">次の版（v2）では、マイコンをキーの基板の裏に載せて、もう一段薄くします。図は設計中の 3D モデルです（色は実物と違います）。</p>
+    <div class="inside">
+      <figure class="shot wide render-bg">
+        <img src="images/case-assembly.jpg" width="1200" height="900" loading="lazy" alt="v2 のケースの 3D 図。左上にキー 10 個、右にノブ 16 個と OLED の窓 4 つ">
+        <figcaption>v2 のケース。手前 13.6mm・奥 24.5mm の薄型で、手前に 5° 傾けています。</figcaption>
+      </figure>
+      <figure class="shot render-bg">
+        <img src="images/case-full_exploded_knob.jpg" width="1200" height="900" loading="lazy" alt="ノブ 4 個とナット、パネル、エンコーダーを載せた基板の分解図">
+        <figcaption>ノブはナットでパネルに留めます。</figcaption>
+      </figure>
+      <figure class="shot render-bg">
+        <img src="images/case-full_section.jpg" width="1200" height="900" loading="lazy" alt="ノブとキーの並びを横から切った断面図">
+        <figcaption>断面。ノブとキーの高さをそろえています。</figcaption>
+      </figure>
+      <figure class="shot half">
+        <img src="images/board-top.jpg" width="1000" height="940" loading="lazy" alt="キー基板の表。MX 茶軸のスイッチが 2 列 5 段">
+        <figcaption>キー基板の表。スイッチは差すだけ。</figcaption>
+      </figure>
+      <figure class="shot half">
+        <img src="images/board-bottom.jpg" width="1000" height="925" loading="lazy" alt="キー基板の裏。マイコン、OLED 用のコネクタ 4 個、ホットスワップソケット 10 個">
+        <figcaption>裏にマイコンと OLED のコネクタをまとめました。</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="spec">
+    <div class="eyebrow">Specifications</div>
+    <h2>仕様</h2>
+    <p class="section-lead">開発中の仕様です。変わることがあります。</p>
+    <div class="spec">
+      <dl>
+        <dt>ノブ</dt>
+        <dd>ロータリーエンコーダー × 16（2 段 × 8 列、24 クリック／回転、押し込みスイッチ付き）</dd>
+        <dt>表示</dt>
+        <dd>3.12 インチ OLED（256 × 64、16 階調）× 4</dd>
+        <dt>キー</dt>
+        <dd>MX 茶軸キースイッチ × 10（2 列 × 5 段、ホットスワップ）<br><small>「次の写真」「取り消し」など、任意の操作を割り当てられます</small></dd>
+        <dt>接続</dt>
+        <dd>USB-C（USB MIDI クラスコンプライアント）</dd>
+        <dt>電源</dt>
+        <dd>USB バスパワー</dd>
+        <dt>マイコン</dt>
+        <dd>ESP32-S3</dd>
+        <dt>大きさ</dt>
+        <dd>291 × 125mm、厚さ 手前 13.6mm／奥 24.5mm <small>（v2 の設計値）</small></dd>
+        <dt>ケース</dt>
+        <dd>3D プリント</dd>
+        <dt>使い方</dt>
+        <dd>macOS で、対応アプリと組み合わせて使います</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section id="status">
+    <div class="eyebrow">Status</div>
+    <h2>開発状況</h2>
+    <p class="section-lead">試作機は動いています。いまは、薄く・組み立てやすくする v2 を作っています。</p>
+    <ol class="timeline">
+      <li class="done">
+        <div class="step">01</div>
+        <h3>試作 1 号機</h3>
+        <p>OLED・ノブ・キーがそろって動いています。</p>
+        <span class="state">完了</span>
+      </li>
+      <li class="done">
+        <div class="step">02</div>
+        <h3>v2 の基板</h3>
+        <p>マイコンをキー基板に載せ、部品を減らしました。</p>
+        <span class="state">設計完了</span>
+      </li>
+      <li class="now">
+        <div class="step">03</div>
+        <h3>v2 のケースとソフト</h3>
+        <p>薄型ケースとファームウェアを作っています。</p>
+        <span class="state">進行中</span>
+      </li>
+      <li>
+        <div class="step">04</div>
+        <h3>頒布</h3>
+        <p>方法と価格は準備中です。</p>
+        <span class="state">これから</span>
+      </li>
+    </ol>
+  </section>
+
+  <div class="contact" id="contact">
+    <div class="eyebrow">Contact</div>
+    <h2>価格・頒布について</h2>
+    <p>価格と頒布の方法は準備中です。気になる方、使ってみたい方は、X（旧 Twitter）でお気軽にご連絡ください。</p>
+    <a class="btn" href="https://x.com/junpeiwada" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      @junpeiwada に連絡する
+    </a>
+  </div>
+
+</main>
+
+<footer class="wrap">
+  <span>© 2026 Junpei Wada</span>
+  <span>JP-Knob16 は個人で開発しているハードウェアです。<a href="../">ほかの製品（JProducts）</a></span>
+</footer>
+
+<script>
+// 製品の正面図と、写真編集の画面のデモ（単位 mm。原点はケースの左上。寸法は試作機の写真から取った）
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById("device");
+  const out = document.getElementById("readout");
+  const view = document.getElementById("view");
+  const el = (tag, attrs, parent = svg) => {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    parent.appendChild(e);
+    return e;
+  };
+
+  // ---- パラメータと写真 ----
+  // [名前, 1 クリックの量, 小数の桁, 最小, 最大, 既定値]（OLED 4 枚 × 4、ノブの並びと同じ順）
+  const PARAMS = [
+    ["露光量", .05, 2, -5, 5, 0], ["コントラスト", 1, 0, -100, 100, 0], ["ハイライト", 1, 0, -100, 100, 0], ["シャドウ", 1, 0, -100, 100, 0],
+    ["白レベル", 1, 0, -100, 100, 0], ["黒レベル", 1, 0, -100, 100, 0], ["色温度", 1, 0, -100, 100, 0], ["色かぶり", 1, 0, -100, 100, 0],
+    ["テクスチャ", 1, 0, -100, 100, 0], ["明瞭度", 1, 0, -100, 100, 0], ["かすみの除去", 1, 0, -100, 100, 0], ["自然な彩度", 1, 0, -100, 100, 0],
+    ["彩度", 1, 0, -100, 100, 0], ["粒子", 1, 0, 0, 100, 0], ["周辺光量", 1, 0, -100, 100, 0], ["シャープ", 1, 0, 0, 150, 40],
+  ];
+  const DEFAULTS = PARAMS.map((p) => p[5]);
+  // 風景のイラスト 3 枚。色と、最初に入っている補正値
+  const PHOTOS = [
+    { file: "DSC_0101.jpg", sky: ["#3b4a7a", "#f2a65a"], sun: ["#ffd38a", 212, 112], m1: "#6b5a7a", m2: "#3e3550", lake: ["#e89a5a", "#3e3550"], fg: "#1f1c2a",
+      vals: [.85, 7, -3, 30, 5, -21, 0, 0, 0, 0, 0, 14, 0, 0, 0, 40] },
+    { file: "DSC_0102.jpg", sky: ["#8fc3e8", "#e9f2f0"], sun: ["#fffbe6", 78, 58], m1: "#8aa6b8", m2: "#4f7a6a", lake: ["#9cc9e0", "#4f7a6a"], fg: "#2f4a3a",
+      vals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40] },
+    { file: "DSC_0103.jpg", sky: ["#2b5ca8", "#a9c8ea"], sun: ["#ffffff", 238, 48], m1: "#e8eef5", m2: "#9fb3c8", lake: ["#7fa4cc", "#3a5578"], fg: "#233246",
+      vals: [-.3, 12, -40, 15, 0, -8, -12, 0, 0, 10, 15, 0, 0, 0, -20, 40] },
+  ];
+  PHOTOS.forEach((p) => { p.undo = []; p.redo = []; p.stars = 0; });
+  let cur = 0;
+  let clipboard = null;
+  let lastKnob = 0;
+  let lastTurn = { i: -1, t: 0 };
+  let showBefore = false;
+
+  // ---- 正面図 ----
+  const defs = el("defs", {});
+  defs.innerHTML = `
+    <linearGradient id="caseG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fdfdfb"/><stop offset="1" stop-color="#ecebe5"/>
+    </linearGradient>
+    <radialGradient id="knobG" cx=".42" cy=".38" r=".7">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e6e5df"/>
+    </radialGradient>
+    <linearGradient id="keyW" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ebeae5"/>
+    </linearGradient>
+    <linearGradient id="keyG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d4e85c"/><stop offset="1" stop-color="#b6cd36"/>
+    </linearGradient>
+    <linearGradient id="keyD" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e6e6e1"/><stop offset="1" stop-color="#d3d3cd"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-20%" width="120%" height="150%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3.5" flood-color="#3c2a14" flood-opacity=".18"/>
+    </filter>`;
+
+  // ケーブル・ケース・継ぎ目
+  el("path", { d: "M33 -10 C33 -6 33 -4 33 -2", stroke: "#1d1f22", "stroke-width": 2.6, fill: "none" });
+  el("rect", { x: 29.6, y: -3.4, width: 6.8, height: 4, rx: 1, fill: "#2a2c30" });
+  el("rect", { x: 0, y: 0, width: 291, height: 125, rx: 5, fill: "url(#caseG)", stroke: "#e2e1da", "stroke-width": .4, filter: "url(#shadow)" });
+  el("line", { x1: 176, y1: 0.4, x2: 176, y2: 124.6, stroke: "#e3e2db", "stroke-width": .5 });
+
+  // キー（2 列 × 5 段。上の 2 つは黄緑、下の 2 つは灰）
+  const KEYS = [
+    ["前の写真", () => go(-1)], ["次の写真", () => go(1)],
+    ["取り消し", undo], ["やり直し", redo],
+    ["ビフォー", null], ["★ レート", rate],
+    ["このノブをリセット", resetOne], ["全部リセット", resetAll],
+    ["設定のコピー", copy], ["設定の貼り付け", paste],
+  ];
+  const keyFill = (r) => r === 0 ? "url(#keyG)" : r === 4 ? "url(#keyD)" : "url(#keyW)";
+  el("rect", { x: 13.6, y: 9.6, width: 40.4, height: 97, rx: 1.5, fill: "#d9d8d1" });
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 2; c++) {
+      const i = r * 2 + c;
+      const [label, action] = KEYS[i];
+      const g = el("g", { class: "key", transform: `translate(${24.3 + c * 19.05} ${20.6 + r * 19.05})`, tabindex: 0, role: "button", "aria-label": `キー ${i + 1}（${label}）` });
+      el("title", {}, g).textContent = label;
+      // 押すと沈む部分（影は動かさない）
+      el("rect", { x: -9, y: -8.2, width: 18, height: 18, rx: 1.6, fill: "rgba(60,42,20,.16)" }, g);
+      const cap = el("g", { class: "key-cap" }, g);
+      el("rect", { class: "key-face", x: -9, y: -9, width: 18, height: 18, rx: 1.6, fill: keyFill(r), stroke: "rgba(0,0,0,.07)", "stroke-width": .35 }, cap);
+      el("rect", { x: -6.4, y: -7, width: 12.8, height: 12.6, rx: 1.6, fill: "none", stroke: "rgba(0,0,0,.035)", "stroke-width": .5 }, cap);
+      let isDown = false;
+      const press = () => {
+        if (isDown) return;
+        isDown = true;
+        g.classList.add("down");
+        show(`KEY ${String(i + 1).padStart(2, "0")} ▸ ${label}`);
+        if (action) action();
+        else setBefore(true);
+      };
+      const release = () => {
+        if (!isDown) return;
+        isDown = false;
+        g.classList.remove("down");
+        if (!action) setBefore(false);
+      };
+      g.addEventListener("pointerdown", (e) => { e.preventDefault(); g.setPointerCapture(e.pointerId); press(); });
+      g.addEventListener("pointerup", release);
+      g.addEventListener("pointercancel", release);
+      g.addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && !e.repeat) { e.preventDefault(); press(); } });
+      g.addEventListener("keyup", (e) => { if (e.key === "Enter" || e.key === " ") release(); });
+      g.addEventListener("blur", release);
+    }
+  }
+
+  // OLED 4 枚と、それぞれの下のノブ 4 本
+  const OLED_X = [80, 192], OLED_Y = [8.5, 60.5], OLED_W = 79.5, OLED_H = 22;
+  const KNOB_DX = [2.5, 27.5, 52.5, 77.5], KNOB_Y = [47, 99.5];
+  const valEls = [];
+  for (let o = 0; o < 4; o++) {
+    const ox = OLED_X[o % 2], oy = OLED_Y[o >> 1];
+    el("rect", { x: ox - 1.2, y: oy - 1.2, width: OLED_W + 2.4, height: OLED_H + 2.4, rx: 1.6, fill: "#d6d5ce" });
+    el("rect", { x: ox, y: oy, width: OLED_W, height: OLED_H, rx: .8, fill: "#0b0c0e" });
+    for (let j = 0; j < 4; j++) {
+      const idx = o * 4 + j;
+      const name = PARAMS[idx][0];
+      const qx = ox + OLED_W * j / 4, qw = OLED_W / 4;
+      el("text", { class: "oled-label", x: qx + qw / 2, y: oy + 6.4, "text-anchor": "middle", "font-size": name.length > 5 ? 2.4 : 2.9, fill: "#c9d1d6" }).textContent = name;
+      valEls[idx] = el("text", { class: "oled-val", x: qx + qw - 2.2, y: oy + 16.6, "text-anchor": "end", "font-size": 6.4, fill: "#e8eef1" });
+
+      // ノブ（印はない）
+      const g = el("g", { class: "knob", transform: `translate(${ox + KNOB_DX[j]} ${KNOB_Y[o >> 1]})`, tabindex: 0, role: "slider", "aria-label": `ノブ ${idx + 1}（${name}）` });
+      el("circle", { cx: 0, cy: .9, r: 9.6, fill: "rgba(60,42,20,.14)" }, g);
+      el("circle", { class: "knob-skirt", r: 9.6, fill: "url(#knobG)", stroke: "#e0dfd8", "stroke-width": .35 }, g);
+      el("circle", { r: 6.4, fill: "url(#knobG)", stroke: "#dddcd5", "stroke-width": .35 }, g);
+      bindKnob(g, idx);
+    }
+  }
+
+  function bindKnob(g, idx) {
+    g.addEventListener("wheel", (e) => { e.preventDefault(); turn(idx, e.deltaY < 0 ? 1 : -1); }, { passive: false });
+    g.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp" || e.key === "ArrowRight") { e.preventDefault(); turn(idx, 1); }
+      if (e.key === "ArrowDown" || e.key === "ArrowLeft") { e.preventDefault(); turn(idx, -1); }
+    });
+    let lastY = null, acc = 0;
+    g.addEventListener("pointerdown", (e) => { lastY = e.clientY; acc = 0; g.setPointerCapture(e.pointerId); });
+    g.addEventListener("pointermove", (e) => {
+      if (lastY === null) return;
+      acc += lastY - e.clientY; lastY = e.clientY;
+      while (Math.abs(acc) >= 5) { turn(idx, Math.sign(acc)); acc -= Math.sign(acc) * 5; }
+    });
+    const end = () => { lastY = null; };
+    g.addEventListener("pointerup", end);
+    g.addEventListener("pointercancel", end);
+  }
+
+  // ---- 値の操作 ----
+  const photo = () => PHOTOS[cur];
+  const fmt = (idx, v) => {
+    const [, , dec, min] = PARAMS[idx];
+    const s = Math.abs(v).toFixed(dec);
+    if (Number(s) === 0) return (0).toFixed(dec);
+    return (v > 0 ? (min < 0 ? "+" : "") : "−") + s;
+  };
+  // 取り消しの単位: 同じノブを続けて回した分は 1 回にまとめる
+  function snapshot(merge) {
+    const p = photo();
+    if (!merge) p.undo.push(p.vals.slice());
+    p.redo = [];
+  }
+
+  function turn(idx, dir) {
+    const p = photo();
+    const now = performance.now();
+    snapshot(lastTurn.i === idx && now - lastTurn.t < 800);
+    lastTurn = { i: idx, t: now };
+    lastKnob = idx;
+    const [name, step, , min, max] = PARAMS[idx];
+    p.vals[idx] = Math.min(max, Math.max(min, Math.round((p.vals[idx] + dir * step) * 100) / 100));
+    render([idx]);
+    show(`KNOB ${String(idx + 1).padStart(2, "0")} ${dir > 0 ? "+1" : "−1"} ▸ ${name} ${fmt(idx, p.vals[idx])}`);
+  }
+
+  function setAll(next, message) {
+    const p = photo();
+    const changed = next.map((v, i) => v !== p.vals[i] ? i : -1).filter((i) => i >= 0);
+    p.vals = next.slice();
+    lastTurn = { i: -1, t: 0 };
+    render(changed);
+    toast(message);
+  }
+  function undo() {
+    const p = photo();
+    if (!p.undo.length) return toast("取り消す操作がありません");
+    p.redo.push(p.vals.slice());
+    const prev = p.undo.pop();
+    const i = prev.findIndex((v, k) => v !== p.vals[k]);
+    setAll(prev, i >= 0 ? `取り消し: ${PARAMS[i][0]} ${fmt(i, prev[i])}` : "取り消し");
+  }
+  function redo() {
+    const p = photo();
+    if (!p.redo.length) return toast("やり直す操作がありません");
+    p.undo.push(p.vals.slice());
+    const next = p.redo.pop();
+    const i = next.findIndex((v, k) => v !== p.vals[k]);
+    setAll(next, i >= 0 ? `やり直し: ${PARAMS[i][0]} ${fmt(i, next[i])}` : "やり直し");
+  }
+  function resetOne() {
+    const next = photo().vals.slice();
+    next[lastKnob] = DEFAULTS[lastKnob];
+    snapshot(false);
+    setAll(next, `${PARAMS[lastKnob][0]} をリセット`);
+  }
+  function resetAll() {
+    snapshot(false);
+    setAll(DEFAULTS, "すべての補正をリセット");
+  }
+  function copy() {
+    clipboard = photo().vals.slice();
+    toast("設定をコピーしました");
+  }
+  function paste() {
+    if (!clipboard) return toast("先に「設定のコピー」を押してください");
+    snapshot(false);
+    setAll(clipboard, "設定を貼り付けました");
+  }
+  function rate() {
+    const p = photo();
+    p.stars = (p.stars + 1) % 6;
+    drawStars();
+    toast(p.stars ? `★ ${p.stars}` : "レートなし");
+  }
+  function go(dir) {
+    cur = (cur + dir + PHOTOS.length) % PHOTOS.length;
+    lastTurn = { i: -1, t: 0 };
+    drawScene();
+    render(PARAMS.map((_, i) => i));
+    view.classList.remove("swap");
+    void view.offsetWidth;
+    view.classList.add("swap");
+    toast(`${dir > 0 ? "次" : "前"}の写真  ${cur + 1} / ${PHOTOS.length}`);
+  }
+  function setBefore(on) {
+    showBefore = on;
+    view.classList.toggle("before", on);
+    applyLook();
+  }
+
+  // ---- 表示 ----
+  function render(changed = []) {
+    const p = photo();
+    p.vals.forEach((v, i) => { valEls[i].textContent = fmt(i, v); });
+    for (const i of changed) {
+      const e = valEls[i];
+      e.classList.add("hot");
+      clearTimeout(e._hot);
+      e._hot = setTimeout(() => e.classList.remove("hot"), 350);
+    }
+    applyLook();
+  }
+
+  function drawScene() {
+    const p = photo();
+    const set = (id, attr, v) => document.getElementById(id).setAttribute(attr, v);
+    set("sky0", "stop-color", p.sky[0]); set("sky1", "stop-color", p.sky[1]);
+    set("lake0", "stop-color", p.lake[0]); set("lake1", "stop-color", p.lake[1]);
+    set("glow0", "stop-color", p.sun[0]); set("glow1", "stop-color", p.sun[0]);
+    for (const id of ["sun", "glowC"]) { set(id, "cx", p.sun[1]); set(id, "cy", p.sun[2]); }
+    set("sun", "fill", p.sun[0]);
+    set("m1", "fill", p.m1); set("m2", "fill", p.m2); set("ref", "fill", p.m2); set("fg", "fill", p.fg);
+    document.getElementById("fileName").textContent = p.file;
+    document.getElementById("photoNo").textContent = `${cur + 1} / ${PHOTOS.length}`;
+    drawStars();
+  }
+
+  function drawStars() {
+    const n = photo().stars;
+    document.getElementById("stars").innerHTML = "★".repeat(n) + `<span class="off">${"★".repeat(5 - n)}</span>`;
+  }
+
+  // 補正値を、写真の見た目（CSS の filter と重ねた層）に置きかえる。おおよその効き方だけ真似ている
+  function applyLook() {
+    const v = showBefore ? DEFAULTS : photo().vals;
+    const [exp, con, hi, sh, wh, bl, temp, tint, tex, cla, haze, vib, sat, grain, vig, sharp] = v;
+    const bright = Math.max(.15, 1 + exp * .28 + (sh * .8 + hi * .4 + wh * .4 + bl * .4) / 400);
+    const contrast = Math.max(.2, 1 + con / 160 + (tex + cla) / 400 + haze / 250 + (sharp - 40) / 1500 - sh / 900);
+    const saturate = Math.max(0, 1 + (sat + vib * .7) / 100 + haze / 400);
+    document.getElementById("scene").style.filter = `brightness(${bright.toFixed(3)}) contrast(${contrast.toFixed(3)}) saturate(${saturate.toFixed(3)})`;
+    const ovTemp = document.getElementById("ovTemp");
+    ovTemp.style.background = temp >= 0 ? "#ff8a1f" : "#2f7bff";
+    ovTemp.style.opacity = Math.min(1, Math.abs(temp) / 110);
+    const ovTint = document.getElementById("ovTint");
+    ovTint.style.background = tint >= 0 ? "#ff2fb4" : "#2fd36b";
+    ovTint.style.opacity = Math.min(1, Math.abs(tint) / 130);
+    document.getElementById("ovGrain").style.opacity = grain / 160;
+    const ovVig = document.getElementById("ovVig");
+    ovVig.style.background = `radial-gradient(ellipse at center, transparent 45%, ${vig < 0 ? "#000" : "#fff"} 120%)`;
+    ovVig.style.opacity = Math.min(1, Math.abs(vig) / 70);
+  }
+
+  let toastTimer;
+  function toast(text) {
+    const t = document.getElementById("toast");
+    t.textContent = text;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 1400);
+  }
+
+  let timer;
+  function show(text) {
+    out.textContent = "MIDI ▸ " + text;
+    clearTimeout(timer);
+    timer = setTimeout(() => { out.textContent = "MIDI ▸ ready"; }, 2500);
+  }
+
+  drawScene();
+  render();
+
+  // 特長のゲームの画面を順に切り替える
+  const games = [...document.querySelectorAll("#games img")];
+  let gi = 0;
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    setInterval(() => {
+      games[gi].classList.remove("on");
+      gi = (gi + 1) % games.length;
+      games[gi].classList.add("on");
+      document.getElementById("gameName").textContent = games[gi].dataset.name;
+    }, 2200);
+  }
+
+  // スクロールしたらヘッダーに線を出す
+  const header = document.querySelector("header");
+  const onScroll = () => header.classList.toggle("scrolled", window.scrollY > 8);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>
